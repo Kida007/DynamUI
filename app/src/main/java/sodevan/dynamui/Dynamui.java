@@ -20,7 +20,7 @@ public class Dynamui {
     }
 
     public void initializefragment() {
-        Dynamuifragment dynamuifragment = new Dynamuifragment() ;
+        Dynamuifragment dynamuifragment = Dynamuifragment.newInstance("Hello Noob") ;
         FragmentActivity activity = (FragmentActivity)context ;
         activity.getSupportFragmentManager().beginTransaction().add(layoutid , dynamuifragment , activityname).commit() ;
     }
