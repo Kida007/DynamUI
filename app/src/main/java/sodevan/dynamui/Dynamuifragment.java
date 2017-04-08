@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -32,6 +31,7 @@ public class Dynamuifragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.dynamui_fragment , container , false) ;
@@ -42,12 +42,10 @@ public class Dynamuifragment extends Fragment {
         params.addRule(RelativeLayout.CENTER_IN_PARENT);
 
         String stuff =  getArguments().get("stuff").toString() ;
-        String stuffing[] = stuff.split("-") ;
+        String stuffing[] = stuff.split("-ggwp") ;
         DynamuiObject stuffinfo = new DynamuiObject(stuffing[0] , stuffing[1] , stuffing[2]) ;
         Class<?> c=null;
         Object o =null ;
-
-
 
 
         try {
@@ -73,8 +71,11 @@ public class Dynamuifragment extends Fragment {
         }
 
 
+
+
         try {
-            Method method = c.getDeclaredMethod (stuffinfo.getMethodname(), String.class) ;
+            Method method = o.getClass().getMethod( stuffinfo.getMethodname(), CharSequence.class)  ;
+            Log.i( TAG, method+"");
             method.invoke(o , stuffinfo.getValue()) ;
 
         } catch (NoSuchMethodException e) {
@@ -85,10 +86,8 @@ public class Dynamuifragment extends Fragment {
             e.printStackTrace();
         }
 
-        r.addView((TextView)o);
-
-
-
+        r.addView((View)o);
         return v ;
     }
+
 }

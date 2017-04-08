@@ -20,6 +20,10 @@ public class DynamuiObject {
         return Classname;
     }
 
+    public void setClassname(String classname) {
+        Classname = classname;
+    }
+
     public String getMethodname() {
         return Methodname;
     }

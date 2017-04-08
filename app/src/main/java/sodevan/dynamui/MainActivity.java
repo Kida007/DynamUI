@@ -13,7 +13,7 @@ public class MainActivity extends FragmentActivity{
         setContentView(R.layout.activity_main);
 
 
-        Dynamui dynamui = new Dynamui("Main Activity", R.id.container , this , "android.widget.TextView-setText-HelloWorld") ;
+        Dynamui dynamui = new Dynamui("Main Activity", R.id.container , this , "android.widget.TextView-ggwpsetText-ggwpMy Name Is Pro") ;
         dynamui.initializefragment();
 
     }
