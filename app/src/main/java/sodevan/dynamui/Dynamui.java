@@ -11,17 +11,20 @@ public class Dynamui {
     private String activityname  ;
     private int layoutid ;
     private Context context;
+    private String stuff ;
 
 
-    public Dynamui(String activityname, int layoutid, Context context) {
+    public Dynamui(String activityname, int layoutid, Context context  , String stuff) {
         this.activityname = activityname;
         this.layoutid = layoutid;
         this.context = context;
+        this.stuff = stuff ;
     }
 
     public void initializefragment() {
-        Dynamuifragment dynamuifragment = Dynamuifragment.newInstance("Hello Noob") ;
+        Dynamuifragment dynamuifragment = Dynamuifragment.newInstance(stuff) ;
         FragmentActivity activity = (FragmentActivity)context ;
         activity.getSupportFragmentManager().beginTransaction().add(layoutid , dynamuifragment , activityname).commit() ;
+
     }
 }
