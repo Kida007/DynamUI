@@ -44,12 +44,21 @@ public class Dynamuifragment extends Fragment {
         String stuff =  getArguments().get("stuff").toString() ;
         String stuffing[] = stuff.split("-ggwp") ;
         DynamuiObject stuffinfo = new DynamuiObject(stuffing[0] , stuffing[1] , stuffing[2]) ;
+        View view= buildView(stuffinfo)  ;
+        r.addView(view);
+        return v ;
+    }
+
+
+
+    public View buildView(DynamuiObject stuffinfo) {
+
         Class<?> c=null;
         Object o =null ;
 
 
         try {
-             c = Class.forName(stuffinfo.getClassname());
+            c = Class.forName(stuffinfo.getClassname());
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -86,8 +95,9 @@ public class Dynamuifragment extends Fragment {
             e.printStackTrace();
         }
 
-        r.addView((View)o);
-        return v ;
+        View view = (View)o ;
+
+        return view ;
     }
 
 }
