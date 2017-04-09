@@ -10,6 +10,8 @@ public class DynamuiObjectParams {
     private String Paramvalue ;
 
 
+
+
     public DynamuiObjectParams(Class<?> paramtype, String paramvalue) {
         Paramtype = paramtype;
         Paramvalue = paramvalue;

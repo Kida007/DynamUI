@@ -1,14 +1,20 @@
 package sodevan.dynamui;
 
+import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * Created by ravipiyush on 06/04/17.
@@ -42,6 +48,8 @@ public class Dynamuifragment extends Fragment {
 
         String stuff =  getArguments().get("stuff").toString() ;
         DynamuiObject dynamuiObject =  buildDynamuiObjects(stuff) ;
+        Log.i("dynamuiobject : "  , dynamuiObject.getProperties()[0].getParameters()[0].getParamtype()+"") ;
+
         View view= buildView(dynamuiObject)  ;
         r.addView(view);
         return v ;
@@ -53,43 +61,48 @@ public class Dynamuifragment extends Fragment {
 
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    public View buildView(DynamuiObject stuffinfo) {
+    public View buildView(DynamuiObject object) {
 
-        /*Class<?> c=null;
-        Object o =null ;
+        Class classname = object.getClassname() ;
+        Object viewObject = buildViewObject(classname)  ;
+        DynamuiObjectProperty[] properties = object.getProperties() ;
+        int n = properties.length  ;
+
+        for (int h=0 ; h<n ; h++) {
+
+            DynamuiObjectParams[]  params = properties[h].getParameters() ;
+
+            int n1 = params.length ;
+            Class<?>[] allparams = new Class[n1] ;
 
 
-        try {
-            c = Class.forName(stuffinfo.getClassname());
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            for (int k=0 ; k<n1 ; k++) {
+                allparams[k] = params[k].getParamtype()  ;
+            }
+
+            try {
+                Method method = viewObject.getClass().getMethod(properties[h].getMethodname() , allparams ) ;
+                Log.i( TAG, method+"");
+                method.invoke(viewObject , "Helloworld") ;
+
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
         }
 
-        try {
-            assert c != null;
-            Constructor<?> cons = c.getConstructor(Context.class);
-
-            o = cons.newInstance(getContext()) ;
-            Log.i(TAG , "Object :"+o+"") ;
-
-        } catch (java.lang.InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
 
 
-        try {
-            assert o != null;
-            Method method = o.getClass().getMethod( stuffinfo.getMethodname(), CharSequence.class)  ;
-            Log.i( TAG, method+"");
-            method.invoke(o , stuffinfo.getValue()) ;
 
-        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
 
-        View view = (View)o ; */
 
-        View view=null ;
+
+
+
+        View view=(View) viewObject ;
 
         return view ;
     }
@@ -97,8 +110,10 @@ public class Dynamuifragment extends Fragment {
 
     public DynamuiObject buildDynamuiObjects(String stuff) {
 
-        String Stuffing[] = stuff.split("$-prop-$") ;
+        String Stuffing[] = stuff.split("-prop-") ;
         String Classname = Stuffing[0] ;
+        Log.i("dynamuiobject2 : "  , Stuffing[0]) ;
+
         int propno =Stuffing.length-1 ;
         DynamuiObjectProperty[] Objectproperty = buildDynamuiObjectProperties(Stuffing , propno) ;
 
@@ -110,12 +125,12 @@ public class Dynamuifragment extends Fragment {
 
     public DynamuiObjectProperty[] buildDynamuiObjectProperties (String Stuffing[] , int propno){
 
-        DynamuiObjectProperty[] Objectproperty=null ;
+        DynamuiObjectProperty[] Objectproperty= new DynamuiObjectProperty[propno] ;
         for(int i=1 ; i <=propno  ; i++) {
            String property =  Stuffing[i] ;
 
-            String propvars[] = property.split("$-value-$") ;
-            String methodname = propvars[1] ;
+            String propvars[] = property.split("-value-") ;
+            String methodname = propvars[0] ;
             int valueno  = propvars.length-1 ;
             DynamuiObjectParams[] objectParams = buildDynamuiObjectParams(propvars , valueno) ;
             Objectproperty[i-1] = new DynamuiObjectProperty(methodname , objectParams) ;
@@ -129,12 +144,12 @@ public class Dynamuifragment extends Fragment {
 
     public DynamuiObjectParams[] buildDynamuiObjectParams(String propvars[], int valueno ) {
 
-        DynamuiObjectParams[] propparams = null ;
+        DynamuiObjectParams[] propparams = new DynamuiObjectParams[valueno] ;
 
         for (int j=1; j<=valueno ; j++) {
             String param = propvars[j] ;
-            String paramvars[] = param.split("$-type-$") ;
-            propparams[j-1]= new DynamuiObjectParams(getClassfromname(paramvars[0]), paramvars[1])  ;
+            String paramvars[] = param.split("-type-") ;
+            propparams[j-1]= new DynamuiObjectParams(getClassfromname(paramvars[1]), paramvars[0])  ;
 
         }
         return propparams ;
@@ -160,6 +175,40 @@ public class Dynamuifragment extends Fragment {
     }
 
 
+    public Object buildViewObject(Class<?> classname){
+
+        Object o =null ;
+
+
+        try {
+
+            Constructor<?> constructor = classname.getConstructor(Context.class) ;
+            o = constructor.newInstance(getContext()) ;
+            Log.i(TAG , "Object :"+o+"") ;
+
+
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (java.lang.InstantiationException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+
+        return o ;
+    }
+
+
 
 
 }
+
+
+/*  Class[] classes = new Class[n] ;
+
+        for (int k=0 ; k<n ; k++) {
+
+            classes[k] = params[k].getParamtype() ;
+        }*/
