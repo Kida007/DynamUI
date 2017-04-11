@@ -15,31 +15,39 @@ import android.widget.RelativeLayout;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 
 /**
  * Created by ravipiyush on 06/04/17.
  */
 
-// TODO: 09/04/17 Make Generic Property Builder
 
 
 public class Dynamuifragment extends Fragment {
 
     String TAG = "DynamuiFragment";
+    HashMap<Class<?> , Class<?>> pister ;
 
 
     public static Dynamuifragment newInstance(String ns) {
+
         Bundle args = new Bundle();
         args.putString("stuff",ns);
         Dynamuifragment fragment = new Dynamuifragment();
         fragment.setArguments(args);
         return fragment;
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.dynamui_fragment , container , false) ;
+
+        pister = new HashMap<>();
+        pister.put(java.lang.Integer.class , int.class);
+        pister.put(java.lang.Float.class ,  float.class);
+
 
         RelativeLayout r = (RelativeLayout)v.findViewById(R.id.mag) ;
 
@@ -74,16 +82,21 @@ public class Dynamuifragment extends Fragment {
 
             int n1 = params.length ;
             Class<?>[] allparams = new Class[n1] ;
+            Object[] finalparams = new Object[n1] ;
 
 
             for (int k=0 ; k<n1 ; k++) {
                 allparams[k] = params[k].getParamtype()  ;
+                Object o12 = parsevalue(params[k].getParamvalue()  , params[k].getParserClass() , params[k].getParsermethod()) ;
+                finalparams[k] = o12  ;
+
             }
 
             try {
+
                 Method method = viewObject.getClass().getMethod(properties[h].getMethodname() , allparams ) ;
                 Log.i( TAG, method+"");
-                method.invoke(viewObject , "Helloworld") ;
+                method.invoke(viewObject , finalparams) ;
 
             } catch (NoSuchMethodException e) {
                 e.printStackTrace();
@@ -95,13 +108,6 @@ public class Dynamuifragment extends Fragment {
         }
 
 
-
-
-
-
-
-
-
         View view=(View) viewObject ;
 
         return view ;
@@ -110,7 +116,7 @@ public class Dynamuifragment extends Fragment {
 
     public DynamuiObject buildDynamuiObjects(String stuff) {
 
-        String Stuffing[] = stuff.split("-prop-") ;
+        String Stuffing[] = stuff.split("-PROP-") ;
         String Classname = Stuffing[0] ;
         Log.i("dynamuiobject2 : "  , Stuffing[0]) ;
 
@@ -129,7 +135,7 @@ public class Dynamuifragment extends Fragment {
         for(int i=1 ; i <=propno  ; i++) {
            String property =  Stuffing[i] ;
 
-            String propvars[] = property.split("-value-") ;
+            String propvars[] = property.split("-VALUE-") ;
             String methodname = propvars[0] ;
             int valueno  = propvars.length-1 ;
             DynamuiObjectParams[] objectParams = buildDynamuiObjectParams(propvars , valueno) ;
@@ -148,8 +154,11 @@ public class Dynamuifragment extends Fragment {
 
         for (int j=1; j<=valueno ; j++) {
             String param = propvars[j] ;
-            String paramvars[] = param.split("-type-") ;
-            propparams[j-1]= new DynamuiObjectParams(getClassfromname(paramvars[1]), paramvars[0])  ;
+            String paramvars[] = param.split("-TYPE-") ;
+            String reparamsvars[] = paramvars[1].split("-PARSERC-") ;
+            String pichiparamvars[] = reparamsvars[1].split("-PARSERM-");
+
+            propparams[j-1]= new DynamuiObjectParams(getClassfromname(reparamsvars[0]), paramvars[0] , getClassfromname(pichiparamvars[0]) , pichiparamvars[1])  ;
 
         }
         return propparams ;
@@ -164,10 +173,19 @@ public class Dynamuifragment extends Fragment {
 
         Class<?> c=null ;
 
-        try {
-            c = Class.forName(Classname);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+        if (Classname.equals("int")||Classname.equals("float")||Classname.equals("double")||Classname.equals("long")||Classname.equals("char")||Classname.equals("boolean")) {
+
+            c=getprimitiveclass(Classname) ;
+
+        }
+
+        else {
+            try {
+                c = Class.forName(Classname);
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+
         }
 
         return c ;
@@ -199,6 +217,75 @@ public class Dynamuifragment extends Fragment {
 
         return o ;
     }
+
+
+    public Object parsevalue(String stringvalue , Class<?> paramtype , String parser) {
+
+        if (parser.equals("String")){
+            Log.i("parsed Object" ,  "<3") ;
+            return stringvalue ;
+        }
+
+        else {
+
+            Object parsedvalue = null ;
+
+            try {
+                Method method = paramtype.getMethod(parser, String.class);
+                try {
+                    parsedvalue = method.invoke(null ,stringvalue ) ;
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                }
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            }
+
+            Log.i("parsed Object" , parsedvalue+"") ;
+            return parsedvalue;
+
+        }
+
+
+
+
+    }
+
+
+
+    public Class<?> getprimitiveclass(String classname){
+
+        Class<?> prim=null ;
+
+
+        switch(classname) {
+
+            case "int" : prim= int.class ;
+                break;
+            case "float" : prim = float.class ;
+                break ;
+            case "double" : prim = double.class ;
+                break;
+            case "long" : prim=long.class ;
+                break ;
+            case "char" : prim=char.class ;
+                break ;
+            case "boolean" : prim=boolean.class ;
+        }
+
+
+        return prim ;
+    }
+
+
+
+
+
+
+
+
 
 
 

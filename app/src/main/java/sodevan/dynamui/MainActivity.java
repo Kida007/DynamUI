@@ -3,6 +3,7 @@ package sodevan.dynamui;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.widget.TextView;
 
 
 public class MainActivity extends FragmentActivity{
@@ -14,11 +15,17 @@ public class MainActivity extends FragmentActivity{
         setContentView(R.layout.activity_main);
 
 
+        TextView t  ;
+
+
 
         // TODO: 09/04/17 Make Generic Property Builder
 
-        Dynamui dynamui = new Dynamui("Main Activity", R.id.container , this , "android.widget.TextView-prop-setText-value-My Name Is Pro-type-java.lang.CharSequence") ;
+        Dynamui dynamui = new Dynamui("Main Activity", R.id.container , this , "android.widget.TextView-PROP-setText-VALUE-My Name Is Pro-TYPE-java.lang.CharSequence-PARSERC-java.lang.String-PARSERM-String-PROP-setTextSize-VALUE-30-TYPE-float-PARSERC-java.lang.Float-PARSERM-parseFloat") ;
         dynamui.initializefragment();
 
+
     }
+
+
 }
