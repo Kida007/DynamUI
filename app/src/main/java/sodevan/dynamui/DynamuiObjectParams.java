@@ -6,24 +6,24 @@ package sodevan.dynamui;
 
 public class DynamuiObjectParams {
 
-    private Class<?> Paramtype ;
+    private String Paramtype ;
     private String Paramvalue ;
-    private Class<?> ParserClass ;
+    private String ParserClass ;
     private String Parsermethod ;
 
-
-    public DynamuiObjectParams(Class<?> paramtype, String paramvalue, Class<?> parserClass, String parsermethod) {
+    public DynamuiObjectParams(String paramtype, String paramvalue, String parserClass, String parsermethod) {
         Paramtype = paramtype;
         Paramvalue = paramvalue;
         ParserClass = parserClass;
         Parsermethod = parsermethod;
     }
 
-    public Class<?> getParamtype() {
+
+    public String getParamtype() {
         return Paramtype;
     }
 
-    public void setParamtype(Class<?> paramtype) {
+    public void setParamtype(String paramtype) {
         Paramtype = paramtype;
     }
 
@@ -35,11 +35,11 @@ public class DynamuiObjectParams {
         Paramvalue = paramvalue;
     }
 
-    public Class<?> getParserClass() {
+    public String getParserClass() {
         return ParserClass;
     }
 
-    public void setParserClass(Class<?> parserClass) {
+    public void setParserClass(String parserClass) {
         ParserClass = parserClass;
     }
 

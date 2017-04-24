@@ -12,41 +12,49 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
+import com.google.gson.Gson;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
 
 /**
  * Created by ravipiyush on 06/04/17.
  */
 
 
-
+// Dynamui Fragment Class , A Dynamic Fragment is build here  
+    
+    
 public class Dynamuifragment extends Fragment {
 
     String TAG = "DynamuiFragment";
-    HashMap<Class<?> , Class<?>> pister ;
 
+    
 
-    public static Dynamuifragment newInstance(String ns) {
+    // constructor type Function for creating new Instances/ Dynamic Fragements
+    public static Dynamuifragment newInstance(DynamuiObject dynamuiObject) {
 
         Bundle args = new Bundle();
-        args.putString("stuff",ns);
+
+        String  gson  = new Gson().toJson(dynamuiObject) ;
+        args.putString("stuff", gson);
         Dynamuifragment fragment = new Dynamuifragment();
         fragment.setArguments(args);
         return fragment;
 
     }
 
+    
+    
+    // Building Components and adding them to our Fragement .Currently for single View/Object 
+    // TODO: 22/04/17 make Multi Object loop 
+    
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.dynamui_fragment , container , false) ;
 
-        pister = new HashMap<>();
-        pister.put(java.lang.Integer.class , int.class);
-        pister.put(java.lang.Float.class ,  float.class);
 
 
         RelativeLayout r = (RelativeLayout)v.findViewById(R.id.mag) ;
@@ -55,7 +63,10 @@ public class Dynamuifragment extends Fragment {
         params.addRule(RelativeLayout.CENTER_IN_PARENT);
 
         String stuff =  getArguments().get("stuff").toString() ;
-        DynamuiObject dynamuiObject =  buildDynamuiObjects(stuff) ;
+
+        DynamuiObject  dynamuiObject = new Gson().fromJson( stuff , DynamuiObject.class) ;
+
+
         Log.i("dynamuiobject : "  , dynamuiObject.getProperties()[0].getParameters()[0].getParamtype()+"") ;
 
         View view= buildView(dynamuiObject)  ;
@@ -67,11 +78,11 @@ public class Dynamuifragment extends Fragment {
 
 
 
-
+    
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public View buildView(DynamuiObject object) {
 
-        Class classname = object.getClassname() ;
+        Class classname = getClassfromname(object.getClassname()) ;
         Object viewObject = buildViewObject(classname)  ;
         DynamuiObjectProperty[] properties = object.getProperties() ;
         int n = properties.length  ;
@@ -86,8 +97,8 @@ public class Dynamuifragment extends Fragment {
 
 
             for (int k=0 ; k<n1 ; k++) {
-                allparams[k] = params[k].getParamtype()  ;
-                Object o12 = parsevalue(params[k].getParamvalue()  , params[k].getParserClass() , params[k].getParsermethod()) ;
+                allparams[k] =getClassfromname( params[k].getParamtype() ) ;
+                Object o12 = parsevalue(params[k].getParamvalue()  , getClassfromname( params[k].getParserClass()) , params[k].getParsermethod()) ;
                 finalparams[k] = o12  ;
 
             }
@@ -112,59 +123,6 @@ public class Dynamuifragment extends Fragment {
 
         return view ;
     }
-
-
-    public DynamuiObject buildDynamuiObjects(String stuff) {
-
-        String Stuffing[] = stuff.split("-PROP-") ;
-        String Classname = Stuffing[0] ;
-        Log.i("dynamuiobject2 : "  , Stuffing[0]) ;
-
-        int propno =Stuffing.length-1 ;
-        DynamuiObjectProperty[] Objectproperty = buildDynamuiObjectProperties(Stuffing , propno) ;
-
-        DynamuiObject dynamuiObject = new DynamuiObject(getClassfromname(Classname), Objectproperty) ;
-        return  dynamuiObject;
-    }
-
-
-
-    public DynamuiObjectProperty[] buildDynamuiObjectProperties (String Stuffing[] , int propno){
-
-        DynamuiObjectProperty[] Objectproperty= new DynamuiObjectProperty[propno] ;
-        for(int i=1 ; i <=propno  ; i++) {
-           String property =  Stuffing[i] ;
-
-            String propvars[] = property.split("-VALUE-") ;
-            String methodname = propvars[0] ;
-            int valueno  = propvars.length-1 ;
-            DynamuiObjectParams[] objectParams = buildDynamuiObjectParams(propvars , valueno) ;
-            Objectproperty[i-1] = new DynamuiObjectProperty(methodname , objectParams) ;
-        }
-
-        return  Objectproperty ;
-    }
-
-
-
-
-    public DynamuiObjectParams[] buildDynamuiObjectParams(String propvars[], int valueno ) {
-
-        DynamuiObjectParams[] propparams = new DynamuiObjectParams[valueno] ;
-
-        for (int j=1; j<=valueno ; j++) {
-            String param = propvars[j] ;
-            String paramvars[] = param.split("-TYPE-") ;
-            String reparamsvars[] = paramvars[1].split("-PARSERC-") ;
-            String pichiparamvars[] = reparamsvars[1].split("-PARSERM-");
-
-            propparams[j-1]= new DynamuiObjectParams(getClassfromname(reparamsvars[0]), paramvars[0] , getClassfromname(pichiparamvars[0]) , pichiparamvars[1])  ;
-
-        }
-        return propparams ;
-
-    }
-
 
 
 
@@ -256,6 +214,9 @@ public class Dynamuifragment extends Fragment {
 
 
     public Class<?> getprimitiveclass(String classname){
+        
+        // We Cant Create Primitive Class Objects from Java Reflection so Creating using getprimitiveclass function
+        
 
         Class<?> prim=null ;
 
@@ -274,21 +235,8 @@ public class Dynamuifragment extends Fragment {
                 break ;
             case "boolean" : prim=boolean.class ;
         }
-
-
         return prim ;
     }
-
-
-
-
-
-
-
-
-
-
-
 
 }
 

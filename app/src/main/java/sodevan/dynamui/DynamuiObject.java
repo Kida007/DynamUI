@@ -5,20 +5,19 @@ package sodevan.dynamui;
  */
 
 public class DynamuiObject {
-    private Class<?> Classname ;
+    private String Classname ;
     private DynamuiObjectProperty[] Properties;
 
-    public DynamuiObject(Class<?> classname, DynamuiObjectProperty[] properties) {
+    public DynamuiObject(String classname, DynamuiObjectProperty[] properties) {
         Classname = classname;
         Properties = properties;
     }
 
-
-    public Class<?> getClassname() {
+    public String getClassname() {
         return Classname;
     }
 
-    public void setClassname(Class<?> classname) {
+    public void setClassname(String classname) {
         Classname = classname;
     }
 
