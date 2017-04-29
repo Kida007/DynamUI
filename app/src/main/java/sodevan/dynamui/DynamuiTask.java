@@ -1,20 +1,20 @@
 package sodevan.dynamui;
 
 /**
- * Created by ravipiyush on 08/04/17.
+ * Created by ravipiyush on 30/04/17.
  */
 
-public class DynamuiObject {
+public class DynamuiTask {
+
     private String Classname ;
     private DynamuiObjectProperty[] Properties;
     private String Status ;
-    private DynamuiListener dynamuiListener;
 
-    public DynamuiObject(String classname, DynamuiObjectProperty[] properties, String status, DynamuiListener dynamuiListener) {
+
+    public DynamuiTask(String classname, DynamuiObjectProperty[] properties, String status) {
         Classname = classname;
         Properties = properties;
         Status = status;
-        this.dynamuiListener = dynamuiListener;
     }
 
 
@@ -41,14 +41,4 @@ public class DynamuiObject {
     public void setStatus(String status) {
         Status = status;
     }
-
-    public DynamuiListener getDynamuiListener() {
-        return dynamuiListener;
-    }
-
-    public void setDynamuiListener(DynamuiListener dynamuiListener) {
-        this.dynamuiListener = dynamuiListener;
-    }
-
-
 }

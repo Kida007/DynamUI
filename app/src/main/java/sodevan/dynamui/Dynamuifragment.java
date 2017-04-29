@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 
@@ -33,7 +34,7 @@ public class Dynamuifragment extends Fragment {
     
 
     // constructor type Function for creating new Instances/ Dynamic Fragements
-    public static Dynamuifragment newInstance(DynamuiObject dynamuiObject) {
+    public static Dynamuifragment newInstance(DynamuiObject dynamuiObject ) {
 
         Bundle args = new Bundle();
 
@@ -58,7 +59,6 @@ public class Dynamuifragment extends Fragment {
 
 
         RelativeLayout r = (RelativeLayout)v.findViewById(R.id.mag) ;
-
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT) ;
         params.addRule(RelativeLayout.CENTER_IN_PARENT);
 
@@ -66,10 +66,19 @@ public class Dynamuifragment extends Fragment {
 
         DynamuiObject  dynamuiObject = new Gson().fromJson( stuff , DynamuiObject.class) ;
 
+        DynamuiListener listeners = dynamuiObject.getDynamuiListener() ;
+
+
+
+
+
+
 
         Log.i("dynamuiobject : "  , dynamuiObject.getProperties()[0].getParameters()[0].getParamtype()+"") ;
 
         View view= buildView(dynamuiObject)  ;
+
+        setListeners(view , listeners);
         r.addView(view);
         return v ;
     }
@@ -184,6 +193,10 @@ public class Dynamuifragment extends Fragment {
             return stringvalue ;
         }
 
+        else if (parser.equals("android.content.Context")){
+            return getContext();
+        }
+
         else {
 
             Object parsedvalue = null ;
@@ -238,7 +251,153 @@ public class Dynamuifragment extends Fragment {
         return prim ;
     }
 
+
+
+    public void setListeners(View v , final DynamuiListener listeneer) {
+
+
+        if (listeneer!= null) {
+
+
+            String lname = listeneer.getListenername();
+
+
+            DynamuiTask[] tasks = listeneer.getObjoperations() ;
+            int totaloper = listeneer.getTotaloper() ;
+
+            final DynamuiCompactTask[] compactTasks = buildCompactTasks(tasks , totaloper);
+
+
+
+
+
+
+
+
+            if (lname.equals("click")) {
+
+                v.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        for ( DynamuiCompactTask y : compactTasks) {
+
+                            try {
+
+
+                                Log.i("d" , y.getFp()[2]+"") ;
+
+                              Object o =   y.getM().invoke(y.getO() , y.getFp())  ;
+                              Method m=  Toast.class.getMethod("show") ;
+                                m.invoke(o);
+
+                            } catch (IllegalAccessException e) {
+                                e.printStackTrace();
+                            } catch (InvocationTargetException e) {
+                                e.printStackTrace();
+                            } catch (NoSuchMethodException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                    }
+                });
+            }
+
+
+
+
+
+        }
+
+    }
+
+
+
+    public DynamuiCompactTask[] buildCompactTasks(DynamuiTask[] tasks  , int totaloper){
+        DynamuiCompactTask[] compactTasks = null  ;
+
+        if(tasks!=null){
+
+            int n = tasks.length ;
+            compactTasks  = new DynamuiCompactTask[totaloper] ;
+
+            int num =0 ;
+
+            for (int i=0 ; i<n ; i++ ){
+
+
+                Class classname = getClassfromname(tasks[i].getClassname()) ;
+
+                Log.i("tasks :" , classname+ "") ;
+
+                Object viewObject =null ;
+
+                if (classname != Toast.class){
+                    viewObject = buildViewObject(classname)  ;
+                    Log.i("tasks :" , viewObject+ "") ; ;
+
+                }
+
+                Log.i("tasks :" , viewObject+ "") ; ;
+
+
+
+
+                DynamuiObjectProperty[] properties = tasks[i].getProperties() ;
+                int n3 = properties.length  ;
+
+                for (int h=0 ; h<n3 ; h++) {
+                    Method method =null  ;
+
+                    DynamuiObjectParams[]  params = properties[h].getParameters() ;
+
+                    int n1 = params.length ;
+                    Class<?>[] allparams = new Class[n1] ;
+                    Object[] finalparams = new Object[n1] ;
+
+
+                    for (int k=0 ; k<n1 ; k++) {
+                        allparams[k] =getClassfromname( params[k].getParamtype() ) ;
+                        Object o12 = parsevalue(params[k].getParamvalue()  , getClassfromname( params[k].getParserClass()) , params[k].getParsermethod()) ;
+                        finalparams[k] = o12  ;
+
+                    }
+
+                    try {
+
+                         method = classname.getMethod(properties[h].getMethodname() , allparams ) ;
+                        Log.i( "tasks", method+"");
+
+                    } catch (NoSuchMethodException e) {
+                        e.printStackTrace();
+                    }
+
+                    compactTasks[num] = new DynamuiCompactTask( viewObject , method , finalparams ) ;
+
+                }
+
+            }
+
+        }
+
+        return  compactTasks;
+    }
+
+
+
+
+
+
+
+
 }
+
+
+
+
+
+
 
 
 /*  Class[] classes = new Class[n] ;
