@@ -9,17 +9,16 @@ public class DynamuiObject {
     private DynamuiObjectProperty[] Properties;
     private String Status ;
     private DynamuiListener dynamuiListener;
+    private int Id  ;
 
-    public DynamuiObject(String classname, DynamuiObjectProperty[] properties, String status, DynamuiListener dynamuiListener) {
+
+    public DynamuiObject(String classname, DynamuiObjectProperty[] properties, String status, DynamuiListener dynamuiListener, int id) {
         Classname = classname;
         Properties = properties;
         Status = status;
         this.dynamuiListener = dynamuiListener;
+        Id = id;
     }
-
-
-
-
 
     public String getClassname() {
         return Classname;
@@ -53,5 +52,11 @@ public class DynamuiObject {
         this.dynamuiListener = dynamuiListener;
     }
 
+    public int getId() {
+        return Id;
+    }
 
+    public void setId(int id) {
+        Id = id;
+    }
 }

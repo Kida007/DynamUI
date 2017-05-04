@@ -16,6 +16,8 @@ public class DynamuiObjectParams {
         Paramvalue = paramvalue;
         ParserClass = parserClass;
         Parsermethod = parsermethod;
+
+
     }
 
 

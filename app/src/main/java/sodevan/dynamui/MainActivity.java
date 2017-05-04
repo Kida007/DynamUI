@@ -28,13 +28,16 @@ public class MainActivity extends FragmentActivity{
 
         DynamuiListener lis = new DynamuiListener("click" , t , 1 ) ;
 
+        DynamuiObjectParams[] para4 ={ new DynamuiObjectParams("int","123" , "java.lang.Integer","parseInt" )} ;
+
         DynamuiObjectParams[] para1 ={ new DynamuiObjectParams("java.lang.CharSequence","My Name Is Pro" , "java.lang.String","String" )} ;
         DynamuiObjectParams[] para2= {new DynamuiObjectParams("float" ,"30" , "java.lang.Float","parseFloat" )} ;
         DynamuiObjectParams[] para3= {new DynamuiObjectParams("int" ,"130" , "java.lang.Integer","parseInt" ) , new DynamuiObjectParams("int" ,"130" , "java.lang.Integer","parseInt" ) , new DynamuiObjectParams("int" ,"130" , "java.lang.Integer","parseInt" ) , new DynamuiObjectParams("int" ,"130" , "java.lang.Integer","parseInt" )} ;
-        DynamuiObjectProperty[] dp = {new DynamuiObjectProperty("setText" , para1) , new DynamuiObjectProperty("setTextSize", para2) , new DynamuiObjectProperty("setPadding" ,para3)}  ;
+        DynamuiObjectProperty[] dp = {new DynamuiObjectProperty("setText" , para1) , new DynamuiObjectProperty("setTextSize", para2) , new DynamuiObjectProperty("setPadding" ,para3) , new DynamuiObjectProperty("setId" ,para4)}  ;
 
 
-        DynamuiObject n1 = new DynamuiObject("android.widget.TextView" ,dp , "new" , lis) ;
+
+        DynamuiObject n1 = new DynamuiObject("android.widget.TextView" ,dp , "new" , lis , 123 ) ;
          Dynamui dynamui = new Dynamui("Main Activity", R.id.container , this , n1) ;
         dynamui.initializefragment();
 

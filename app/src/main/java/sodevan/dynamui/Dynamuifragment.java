@@ -31,7 +31,9 @@ import java.util.LinkedHashMap;
     
 public class Dynamuifragment extends Fragment {
 
-    String TAG = "DynamuiFragment";
+    private String TAG = "DynamuiFragment";
+    private ViewGroup container ;
+    private RelativeLayout r ;
 
     
 
@@ -58,11 +60,12 @@ public class Dynamuifragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.dynamui_fragment , container , false) ;
 
+        this.container = container ;
 
-
-        RelativeLayout r = (RelativeLayout)v.findViewById(R.id.mag) ;
+        r = (RelativeLayout)v.findViewById(R.id.mag) ;
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT) ;
         params.addRule(RelativeLayout.CENTER_IN_PARENT);
+
 
         String stuff =  getArguments().get("stuff").toString() ;
 
@@ -70,18 +73,13 @@ public class Dynamuifragment extends Fragment {
 
         DynamuiListener listeners = dynamuiObject.getDynamuiListener() ;
 
-
-
-
-
-
-
         Log.i("dynamuiobject : "  , dynamuiObject.getProperties()[0].getParameters()[0].getParamtype()+"") ;
 
         View view= buildView(dynamuiObject)  ;
 
         setListeners(view , listeners);
         r.addView(view);
+
         return v ;
     }
 
@@ -282,6 +280,9 @@ public class Dynamuifragment extends Fragment {
                     @Override
                     public void onClick(View view) {
 
+                        View v342 = viewfinder(123) ;
+
+
                         for ( DynamuiCompactTask y : compactTasks) {
 
                             Object obj = y.getFinalTaskObject() ;
@@ -300,8 +301,7 @@ public class Dynamuifragment extends Fragment {
                                     try {
 
                                         Object o =  method.invoke(obj, finalparams);
-
-                                        if (o.getClass()==obj.getClass()){
+                                        if (o.getClass()==y.getaClass()){
                                             callbackObj = o ;
                                         }
                                         Log.i("callback obj" , callbackObj+"") ;
@@ -415,7 +415,7 @@ public class Dynamuifragment extends Fragment {
                 }
 
 
-                compactTasks[i] = new DynamuiCompactTask(viewObject , finalTasksMethod) ;
+                compactTasks[i] = new DynamuiCompactTask(viewObject , finalTasksMethod , classname) ;
 
 
             }
@@ -427,10 +427,13 @@ public class Dynamuifragment extends Fragment {
 
 
 
+    public View viewfinder(int viewid) {
 
+        View v = r.findViewById(viewid) ;
+        Log.i("Viewfinder" , v+"");
+        return v ;
 
-
-
+    }
 
 
 

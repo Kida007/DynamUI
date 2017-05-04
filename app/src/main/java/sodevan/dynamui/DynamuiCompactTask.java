@@ -11,10 +11,12 @@ public class DynamuiCompactTask {
 
     Object finalTaskObject ;
     LinkedHashMap<Method , Object[]> finalTaskMethod ;
+    Class aClass ;
 
-    public DynamuiCompactTask(Object finalTaskObject, LinkedHashMap<Method, Object[]> finalTaskMethod) {
+    public DynamuiCompactTask(Object finalTaskObject, LinkedHashMap<Method, Object[]> finalTaskMethod, Class aClass) {
         this.finalTaskObject = finalTaskObject;
         this.finalTaskMethod = finalTaskMethod;
+        this.aClass = aClass;
     }
 
     public Object getFinalTaskObject() {
@@ -31,5 +33,13 @@ public class DynamuiCompactTask {
 
     public void setFinalTaskMethod(LinkedHashMap<Method, Object[]> finalTaskMethod) {
         this.finalTaskMethod = finalTaskMethod;
+    }
+
+    public Class getaClass() {
+        return aClass;
+    }
+
+    public void setaClass(Class aClass) {
+        this.aClass = aClass;
     }
 }
