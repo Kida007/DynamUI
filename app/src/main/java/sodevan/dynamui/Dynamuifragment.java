@@ -18,6 +18,8 @@ import com.google.gson.Gson;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 /**
  * Created by ravipiyush on 06/04/17.
@@ -265,7 +267,7 @@ public class Dynamuifragment extends Fragment {
             DynamuiTask[] tasks = listeneer.getObjoperations() ;
             int totaloper = listeneer.getTotaloper() ;
 
-            final DynamuiCompactTask[] compactTasks = buildCompactTasks(tasks , totaloper);
+            final DynamuiCompactTask[] compactTasks = buildCompactTasks(tasks);
 
 
 
@@ -273,7 +275,7 @@ public class Dynamuifragment extends Fragment {
 
 
 
-
+            //  Onlcick Listener
             if (lname.equals("click")) {
 
                 v.setOnClickListener(new View.OnClickListener() {
@@ -282,22 +284,49 @@ public class Dynamuifragment extends Fragment {
 
                         for ( DynamuiCompactTask y : compactTasks) {
 
-                            try {
+                            Object obj = y.getFinalTaskObject() ;
+                            Object callbackObj = null ;
+                            HashMap<Method , Object[]> methods = y.getFinalTaskMethod() ;
+                            Log.i("methodno" , methods.size()+"");
+
+                            for( Method method : methods.keySet()){
+
+                                Log.i("method name : " , method+"") ;
+
+                                Object[] finalparams = methods.get(method) ;
+                                if (finalparams.length >0)
+
+                                {
+                                    try {
+
+                                        Object o =  method.invoke(obj, finalparams);
+
+                                        if (o.getClass()==obj.getClass()){
+                                            callbackObj = o ;
+                                        }
+                                        Log.i("callback obj" , callbackObj+"") ;
+                                    } catch (IllegalAccessException e) {
+                                        e.printStackTrace();
+                                    } catch (InvocationTargetException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                }
+
+                                else {
+
+                                    try {
+                                        method.invoke(callbackObj);
+                                    } catch (IllegalAccessException e) {
+                                        e.printStackTrace();
+                                    } catch (InvocationTargetException e) {
+                                        e.printStackTrace();
+                                    }
 
 
-                                Log.i("d" , y.getFp()[2]+"") ;
-
-                              Object o =   y.getM().invoke(y.getO() , y.getFp())  ;
-                              Method m=  Toast.class.getMethod("show") ;
-                                m.invoke(o);
-
-                            } catch (IllegalAccessException e) {
-                                e.printStackTrace();
-                            } catch (InvocationTargetException e) {
-                                e.printStackTrace();
-                            } catch (NoSuchMethodException e) {
-                                e.printStackTrace();
+                                }
                             }
+
                         }
 
                     }
@@ -314,13 +343,13 @@ public class Dynamuifragment extends Fragment {
 
 
 
-    public DynamuiCompactTask[] buildCompactTasks(DynamuiTask[] tasks  , int totaloper){
+    public DynamuiCompactTask[] buildCompactTasks(DynamuiTask[] tasks){
         DynamuiCompactTask[] compactTasks = null  ;
 
         if(tasks!=null){
 
             int n = tasks.length ;
-            compactTasks  = new DynamuiCompactTask[totaloper] ;
+            compactTasks  = new DynamuiCompactTask[n] ;
 
             int num =0 ;
 
@@ -328,6 +357,9 @@ public class Dynamuifragment extends Fragment {
 
 
                 Class classname = getClassfromname(tasks[i].getClassname()) ;
+
+                LinkedHashMap<Method , Object[]> finalTasksMethod  = new LinkedHashMap<>() ;
+
 
                 Log.i("tasks :" , classname+ "") ;
 
@@ -345,10 +377,12 @@ public class Dynamuifragment extends Fragment {
 
 
                 DynamuiObjectProperty[] properties = tasks[i].getProperties() ;
+
                 int n3 = properties.length  ;
 
                 for (int h=0 ; h<n3 ; h++) {
-                    Method method =null  ;
+                    Method method = null ;
+
 
                     DynamuiObjectParams[]  params = properties[h].getParameters() ;
 
@@ -373,9 +407,16 @@ public class Dynamuifragment extends Fragment {
                         e.printStackTrace();
                     }
 
-                    compactTasks[num] = new DynamuiCompactTask( viewObject , method , finalparams ) ;
+
+                    finalTasksMethod.put(method  , finalparams ) ;
+
+
 
                 }
+
+
+                compactTasks[i] = new DynamuiCompactTask(viewObject , finalTasksMethod) ;
+
 
             }
 
@@ -383,6 +424,10 @@ public class Dynamuifragment extends Fragment {
 
         return  compactTasks;
     }
+
+
+
+
 
 
 

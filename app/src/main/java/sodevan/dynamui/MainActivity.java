@@ -4,6 +4,7 @@ package sodevan.dynamui;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.widget.TextView;
 
 
 public class MainActivity extends FragmentActivity{
@@ -17,10 +18,11 @@ public class MainActivity extends FragmentActivity{
 
         Context c =getApplicationContext();
 
-        // TODO: 12/04/17 Add Multiple View feature
+        //          TODO: 12/04/17 Add Multiple View feature
 
         DynamuiObjectParams[] apra = {new DynamuiObjectParams("android.content.Context", "this" , "android.content.Context" ,"android.content.Context" ) , new DynamuiObjectParams("java.lang.CharSequence","Im Pro" , "java.lang.String","String") , new DynamuiObjectParams("int" ,"1" , "java.lang.Integer","parseInt" ) } ;
-        DynamuiObjectProperty[] dp2   = {new DynamuiObjectProperty("makeText", apra )} ;
+        DynamuiObjectParams[] apra2 = new DynamuiObjectParams[0];
+        DynamuiObjectProperty[] dp2   = {new DynamuiObjectProperty("makeText", apra ) , new DynamuiObjectProperty("show", apra2 )} ;
         DynamuiTask[] t = {new DynamuiTask("android.widget.Toast" , dp2 , "new")  };
 
 
@@ -35,6 +37,9 @@ public class MainActivity extends FragmentActivity{
         DynamuiObject n1 = new DynamuiObject("android.widget.TextView" ,dp , "new" , lis) ;
          Dynamui dynamui = new Dynamui("Main Activity", R.id.container , this , n1) ;
         dynamui.initializefragment();
+
+
+        TextView tv = new TextView(this);
 
 
     }

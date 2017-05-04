@@ -1,6 +1,7 @@
 package sodevan.dynamui;
 
 import java.lang.reflect.Method;
+import java.util.LinkedHashMap;
 
 /**
  * Created by ravipiyush on 30/04/17.
@@ -8,38 +9,27 @@ import java.lang.reflect.Method;
 
 public class DynamuiCompactTask {
 
-    Object o ;
-    Method m ;
-    Object[] fp ;
+    Object finalTaskObject ;
+    LinkedHashMap<Method , Object[]> finalTaskMethod ;
 
-    public DynamuiCompactTask(Object o, Method m, Object[] fp) {
-        this.o = o;
-        this.m = m;
-        this.fp = fp;
+    public DynamuiCompactTask(Object finalTaskObject, LinkedHashMap<Method, Object[]> finalTaskMethod) {
+        this.finalTaskObject = finalTaskObject;
+        this.finalTaskMethod = finalTaskMethod;
     }
 
-
-    public Object getO() {
-        return o;
+    public Object getFinalTaskObject() {
+        return finalTaskObject;
     }
 
-    public void setO(Object o) {
-        this.o = o;
+    public void setFinalTaskObject(Object finalTaskObject) {
+        this.finalTaskObject = finalTaskObject;
     }
 
-    public Method getM() {
-        return m;
+    public LinkedHashMap<Method, Object[]> getFinalTaskMethod() {
+        return finalTaskMethod;
     }
 
-    public void setM(Method m) {
-        this.m = m;
-    }
-
-    public Object[] getFp() {
-        return fp;
-    }
-
-    public void setFp(Object[] fp) {
-        this.fp = fp;
+    public void setFinalTaskMethod(LinkedHashMap<Method, Object[]> finalTaskMethod) {
+        this.finalTaskMethod = finalTaskMethod;
     }
 }
