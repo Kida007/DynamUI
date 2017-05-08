@@ -11,7 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 
@@ -41,7 +41,6 @@ public class Dynamuifragment extends Fragment {
     public static Dynamuifragment newInstance(DynamuiObject dynamuiObject ) {
 
         Bundle args = new Bundle();
-
         String  gson  = new Gson().toJson(dynamuiObject) ;
         args.putString("stuff", gson);
         Dynamuifragment fragment = new Dynamuifragment();
@@ -77,8 +76,10 @@ public class Dynamuifragment extends Fragment {
 
         View view= buildView(dynamuiObject)  ;
 
-        setListeners(view , listeners);
+
         r.addView(view);
+        setListeners(view , listeners);
+
 
         return v ;
     }
@@ -129,6 +130,8 @@ public class Dynamuifragment extends Fragment {
 
 
         View view=(View) viewObject ;
+
+        view.setId(object.getId());
 
         return view ;
     }
@@ -280,7 +283,6 @@ public class Dynamuifragment extends Fragment {
                     @Override
                     public void onClick(View view) {
 
-                        View v342 = viewfinder(123) ;
 
 
                         for ( DynamuiCompactTask y : compactTasks) {
@@ -300,9 +302,16 @@ public class Dynamuifragment extends Fragment {
                                 {
                                     try {
 
+
+                                        Log.i("tttobj" , obj+"");
+                                        Log.i("tttfp" , finalparams+"");
+
                                         Object o =  method.invoke(obj, finalparams);
-                                        if (o.getClass()==y.getaClass()){
-                                            callbackObj = o ;
+
+                                        if (o!=null) {
+                                            if (o.getClass() == y.getaClass()) {
+                                                callbackObj = o;
+                                            }
                                         }
                                         Log.i("callback obj" , callbackObj+"") ;
                                     } catch (IllegalAccessException e) {
@@ -363,13 +372,29 @@ public class Dynamuifragment extends Fragment {
 
                 Log.i("tasks :" , classname+ "") ;
 
+
                 Object viewObject =null ;
 
-                if (classname != Toast.class){
+                if(tasks[i].getStatus().equals("new")) {
+
                     viewObject = buildViewObject(classname)  ;
-                    Log.i("tasks :" , viewObject+ "") ; ;
+
 
                 }
+
+
+
+                else {
+
+                    int id = Integer.parseInt(tasks[i].getStatus()) ;
+                    viewObject =viewfinder(id);
+
+                }
+
+
+                Log.i("tasks :" , viewObject+ "") ; ;
+
+
 
                 Log.i("tasks :" , viewObject+ "") ; ;
 
@@ -429,12 +454,13 @@ public class Dynamuifragment extends Fragment {
 
     public View viewfinder(int viewid) {
 
-        View v = r.findViewById(viewid) ;
+        Log.i("Viewfinder" , viewid+"");
+
+        TextView v = (TextView)r.findViewById(viewid);
         Log.i("Viewfinder" , v+"");
         return v ;
 
     }
-
 
 
 

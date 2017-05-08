@@ -18,12 +18,27 @@ public class MainActivity extends FragmentActivity{
 
         Context c =getApplicationContext();
 
+
+
+
         //          TODO: 12/04/17 Add Multiple View feature
 
         DynamuiObjectParams[] apra = {new DynamuiObjectParams("android.content.Context", "this" , "android.content.Context" ,"android.content.Context" ) , new DynamuiObjectParams("java.lang.CharSequence","Im Pro" , "java.lang.String","String") , new DynamuiObjectParams("int" ,"1" , "java.lang.Integer","parseInt" ) } ;
         DynamuiObjectParams[] apra2 = new DynamuiObjectParams[0];
+        DynamuiObjectParams[] apra3 = {new DynamuiObjectParams("int" , "#FFC220" , "android.graphics.Color" , "parseColor" )} ;
+
+
+
+
+
+        DynamuiObjectProperty[] dp3 = { new DynamuiObjectProperty("setTextColor" , apra3)};
+
+
+
+
+
         DynamuiObjectProperty[] dp2   = {new DynamuiObjectProperty("makeText", apra ) , new DynamuiObjectProperty("show", apra2 )} ;
-        DynamuiTask[] t = {new DynamuiTask("android.widget.Toast" , dp2 , "new")  };
+        DynamuiTask[] t = {new DynamuiTask("android.widget.Toast" , dp2 , "new")  , new DynamuiTask("android.widget.TextView",dp3 , "12345")};
 
 
         DynamuiListener lis = new DynamuiListener("click" , t , 1 ) ;
@@ -37,7 +52,7 @@ public class MainActivity extends FragmentActivity{
 
 
 
-        DynamuiObject n1 = new DynamuiObject("android.widget.TextView" ,dp , "new" , lis , 123 ) ;
+        DynamuiObject n1 = new DynamuiObject("android.widget.TextView" ,dp , "new" , lis , 12345 ) ;
          Dynamui dynamui = new Dynamui("Main Activity", R.id.container , this , n1) ;
         dynamui.initializefragment();
 
