@@ -21,11 +21,16 @@ public class MainActivity extends FragmentActivity{
 
 
 
+
         //          TODO: 12/04/17 Add Multiple View feature
 
         DynamuiObjectParams[] apra = {new DynamuiObjectParams("android.content.Context", "this" , "android.content.Context" ,"android.content.Context" ) , new DynamuiObjectParams("java.lang.CharSequence","Im Pro" , "java.lang.String","String") , new DynamuiObjectParams("int" ,"1" , "java.lang.Integer","parseInt" ) } ;
         DynamuiObjectParams[] apra2 = new DynamuiObjectParams[0];
         DynamuiObjectParams[] apra3 = {new DynamuiObjectParams("int" , "#FFC220" , "android.graphics.Color" , "parseColor" )} ;
+        DynamuiObjectParams[] apra4 = {new DynamuiObjectParams("android.view.View", "mag" , "findview" , "stringid") , new DynamuiObjectParams("java.lang.CharSequence",  "My Name Is Pro" , "java.lang.String","String" ) , new DynamuiObjectParams("int" ,"5123" , "java.lang.Integer","parseInt" )};
+        DynamuiObjectParams[] apra5 = new DynamuiObjectParams[0];
+
+
 
 
 
@@ -36,9 +41,11 @@ public class MainActivity extends FragmentActivity{
 
 
 
+        DynamuiObjectProperty[] dp4   = {new DynamuiObjectProperty("make", apra4 ) , new DynamuiObjectProperty("show", apra5 )} ;
+
 
         DynamuiObjectProperty[] dp2   = {new DynamuiObjectProperty("makeText", apra ) , new DynamuiObjectProperty("show", apra2 )} ;
-        DynamuiTask[] t = {new DynamuiTask("android.widget.Toast" , dp2 , "new")  , new DynamuiTask("android.widget.TextView",dp3 , "12345")};
+        DynamuiTask[] t = {new DynamuiTask("android.widget.Toast" , dp2 , "new")  , new DynamuiTask("android.widget.TextView",dp3 , "12345") , new DynamuiTask("android.support.design.widget.Snackbar" , dp4 , "new")};
 
 
         DynamuiListener lis = new DynamuiListener("click" , t , 1 ) ;
@@ -55,6 +62,8 @@ public class MainActivity extends FragmentActivity{
         DynamuiObject n1 = new DynamuiObject("android.widget.TextView" ,dp , "new" , lis , 12345 ) ;
          Dynamui dynamui = new Dynamui("Main Activity", R.id.container , this , n1) ;
         dynamui.initializefragment();
+
+
 
 
         TextView tv = new TextView(this);

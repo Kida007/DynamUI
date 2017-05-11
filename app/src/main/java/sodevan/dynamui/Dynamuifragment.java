@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.google.gson.Gson;
 
@@ -34,8 +33,11 @@ public class Dynamuifragment extends Fragment {
     private String TAG = "DynamuiFragment";
     private ViewGroup container ;
     private RelativeLayout r ;
+    private String PACKAGE_NAME ;
+    private int rid ;
 
-    
+
+
 
     // constructor type Function for creating new Instances/ Dynamic Fragements
     public static Dynamuifragment newInstance(DynamuiObject dynamuiObject ) {
@@ -61,7 +63,13 @@ public class Dynamuifragment extends Fragment {
 
         this.container = container ;
 
+
+        PACKAGE_NAME = getContext().getPackageName() ;
+
+
         r = (RelativeLayout)v.findViewById(R.id.mag) ;
+        rid = R.id.mag;
+
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT) ;
         params.addRule(RelativeLayout.CENTER_IN_PARENT);
 
@@ -108,7 +116,7 @@ public class Dynamuifragment extends Fragment {
 
             for (int k=0 ; k<n1 ; k++) {
                 allparams[k] =getClassfromname( params[k].getParamtype() ) ;
-                Object o12 = parsevalue(params[k].getParamvalue()  , getClassfromname( params[k].getParserClass()) , params[k].getParsermethod()) ;
+                Object o12 = parsevalue(params[k].getParamvalue()  , params[k].getParserClass() , params[k].getParsermethod()) ;
                 finalparams[k] = o12  ;
 
             }
@@ -189,7 +197,12 @@ public class Dynamuifragment extends Fragment {
     }
 
 
-    public Object parsevalue(String stringvalue , Class<?> paramtype , String parser) {
+    public Object parsevalue(String stringvalue , String  paramtype , String parser) {
+
+        Object parsedvalue = null ;
+
+        Log.i(TAG, "parsevalue: "+stringvalue + " " + paramtype + " " + parser);
+
 
         if (parser.equals("String")){
             Log.i("parsed Object" ,  "<3") ;
@@ -200,12 +213,31 @@ public class Dynamuifragment extends Fragment {
             return getContext();
         }
 
+        else if(paramtype.equals("findview")) {
+
+            if (parser.equals("stringid")){
+
+                parsedvalue  =viewfinder(intIDGenerator(stringvalue)) ;
+                Log.i("Viewparamstest" , parsedvalue+"") ;
+            }
+
+            else if (parser.equals("intid")){
+
+                parsedvalue  =viewfinder(Integer.parseInt(stringvalue)) ;
+                Log.i("Viewparamstest" , parsedvalue+"") ;
+
+
+            }
+
+            return parsedvalue ;
+
+        }
+
         else {
 
-            Object parsedvalue = null ;
 
             try {
-                Method method = paramtype.getMethod(parser, String.class);
+                Method method = getClassfromname(paramtype).getMethod(parser, String.class);
                 try {
                     parsedvalue = method.invoke(null ,stringvalue ) ;
                 } catch (IllegalAccessException e) {
@@ -418,7 +450,7 @@ public class Dynamuifragment extends Fragment {
 
                     for (int k=0 ; k<n1 ; k++) {
                         allparams[k] =getClassfromname( params[k].getParamtype() ) ;
-                        Object o12 = parsevalue(params[k].getParamvalue()  , getClassfromname( params[k].getParserClass()) , params[k].getParsermethod()) ;
+                        Object o12 = parsevalue(params[k].getParamvalue()  ,  params[k].getParserClass() , params[k].getParsermethod()) ;
                         finalparams[k] = o12  ;
 
                     }
@@ -454,12 +486,25 @@ public class Dynamuifragment extends Fragment {
 
     public View viewfinder(int viewid) {
 
-        Log.i("Viewfinder" , viewid+"");
 
-        TextView v = (TextView)r.findViewById(viewid);
+        if (viewid==rid){
+
+            return r ;
+        }
+
+        Log.i("Viewfinder" , viewid+"");
+        View v = r.findViewById(viewid);
         Log.i("Viewfinder" , v+"");
         return v ;
 
+    }
+
+
+
+    public int intIDGenerator(String stringid) {
+
+        int intID = getResources().getIdentifier(stringid, "id", PACKAGE_NAME);
+        return intID ;
     }
 
 
