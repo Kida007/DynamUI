@@ -418,7 +418,20 @@ public class Dynamuifragment extends Fragment {
 
                 else {
 
-                    int id = Integer.parseInt(tasks[i].getStatus()) ;
+                    int id ;
+
+                    if (android.text.TextUtils.isDigitsOnly(tasks[i].getStatus())){
+
+                         id = Integer.parseInt(tasks[i].getStatus()) ;
+
+
+                    }
+
+                    else {
+                        id = intIDGenerator(tasks[i].getStatus()) ;
+                    }
+
+
                     viewObject =viewfinder(id);
 
                 }
