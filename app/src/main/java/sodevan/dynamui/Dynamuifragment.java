@@ -40,10 +40,10 @@ public class Dynamuifragment extends Fragment {
 
 
     // constructor type Function for creating new Instances/ Dynamic Fragements
-    public static Dynamuifragment newInstance(DynamuiObject dynamuiObject ) {
+    public static Dynamuifragment newInstance(DynamuiObject[] dynamuiObjects ) {
 
         Bundle args = new Bundle();
-        String  gson  = new Gson().toJson(dynamuiObject) ;
+        String  gson  = new Gson().toJson(dynamuiObjects) ;
         args.putString("stuff", gson);
         Dynamuifragment fragment = new Dynamuifragment();
         fragment.setArguments(args);
@@ -54,7 +54,7 @@ public class Dynamuifragment extends Fragment {
     
     
     // Building Components and adding them to our Fragement .Currently for single View/Object 
-    // TODO: 22/04/17 make Multi Object loop 
+
     
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
@@ -74,38 +74,41 @@ public class Dynamuifragment extends Fragment {
 
         String stuff =  getArguments().get("stuff").toString() ;
 
-        DynamuiObject  dynamuiObject = new Gson().fromJson( stuff , DynamuiObject.class) ;
+        DynamuiObject[]  dynamuiObjects = new Gson().fromJson( stuff , DynamuiObject[].class) ;
 
-        DynamuiListener listeners = dynamuiObject.getDynamuiListener() ;
+        for (DynamuiObject dynamuiObject : dynamuiObjects) {
+
+            Log.i("idhash",dynamuiObject.getId()+"");
+            DynamuiListener listeners = dynamuiObject.getDynamuiListener();
+
+            Log.i("dynamuiobject : ", dynamuiObject.getProperties()[0].getParameters()[0].getParamtype() + "");
+
+            View view = buildView(dynamuiObject);
 
 
-        Log.i("dynamuiobject : "  , dynamuiObject.getProperties()[0].getParameters()[0].getParamtype()+"") ;
-
-        View view= buildView(dynamuiObject)  ;
+            // Dimensions and positioning of a particular view object
 
 
-        // Dimensions and positioning of a particular view object
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(dynamuiObject.getObjwidth(), dynamuiObject.getObjheight());
+
+            //if position does not depend on any other view
+
+            if (dynamuiObject.getPosi().getRlobjid() == -1) {
+                params.addRule(dynamuiObject.getPosi().getRlposiparam());
+            }
 
 
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams( dynamuiObject.getObjwidth(), dynamuiObject.getObjheight()) ;
+            //if position depends  on any other view
 
-        //if position does not depend on any other view
+            else {
+                params.addRule(dynamuiObject.getPosi().getRlposiparam(), dynamuiObject.getPosi().getRlobjid());
+            }
 
-        if (dynamuiObject.getPosi().getRlobjid()==-1){
-            params.addRule(dynamuiObject.getPosi().getRlposiparam());
+
+            view.setLayoutParams(params);
+            r.addView(view);
+            setListeners(view, listeners);
         }
-
-
-        //if position depends  on any other view
-
-        else {
-            params.addRule(dynamuiObject.getPosi().getRlposiparam() , dynamuiObject.getPosi().getRlobjid()) ;
-        }
-
-
-        view.setLayoutParams(params);
-        r.addView(view);
-        setListeners(view , listeners);
 
 
         return v ;
