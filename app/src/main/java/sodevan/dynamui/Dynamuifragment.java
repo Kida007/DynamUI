@@ -70,8 +70,6 @@ public class Dynamuifragment extends Fragment {
         r = (RelativeLayout)v.findViewById(R.id.mag) ;
         rid = R.id.mag;
 
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT) ;
-        params.addRule(RelativeLayout.CENTER_IN_PARENT);
 
 
         String stuff =  getArguments().get("stuff").toString() ;
@@ -80,11 +78,32 @@ public class Dynamuifragment extends Fragment {
 
         DynamuiListener listeners = dynamuiObject.getDynamuiListener() ;
 
+
         Log.i("dynamuiobject : "  , dynamuiObject.getProperties()[0].getParameters()[0].getParamtype()+"") ;
 
         View view= buildView(dynamuiObject)  ;
 
 
+        // Dimensions and positioning of a particular view object
+
+
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams( dynamuiObject.getObjwidth(), dynamuiObject.getObjheight()) ;
+
+        //if position does not depend on any other view
+
+        if (dynamuiObject.getPosi().getRlobjid()==-1){
+            params.addRule(dynamuiObject.getPosi().getRlposiparam());
+        }
+
+
+        //if position depends  on any other view
+
+        else {
+            params.addRule(dynamuiObject.getPosi().getRlposiparam() , dynamuiObject.getPosi().getRlobjid()) ;
+        }
+
+
+        view.setLayoutParams(params);
         r.addView(view);
         setListeners(view , listeners);
 

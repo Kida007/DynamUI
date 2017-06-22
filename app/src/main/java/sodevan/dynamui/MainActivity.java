@@ -59,7 +59,7 @@ public class MainActivity extends FragmentActivity{
 
 
 
-        DynamuiObject n1 = new DynamuiObject("android.widget.TextView" ,dp , "new" , lis , 12345 ) ;
+        DynamuiObject n1 = new DynamuiObject("android.widget.TextView" ,dp , "new" , lis , 12345 , -2, -2 , new DynamuiPosition(13, -1) ) ;
          Dynamui dynamui = new Dynamui("Main Activity", R.id.container , this , n1) ;
         dynamui.initializefragment();
 
