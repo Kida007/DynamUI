@@ -1,5 +1,7 @@
 package sodevan.dynamui;
 
+import java.util.HashMap;
+
 /**
  * Created by ravipiyush on 08/04/17.
  */
@@ -13,9 +15,9 @@ public class DynamuiObject {
     private int objheight;
     private int objwidth;
     private DynamuiPosition posi;
+    private HashMap<String , DynamuiPreTasks> allpretasks ;
 
-
-    public DynamuiObject(String classname, DynamuiObjectProperty[] properties, String status, DynamuiListener dynamuiListener, int id, int objheight, int objwidth, DynamuiPosition posi) {
+    public DynamuiObject(String classname, DynamuiObjectProperty[] properties, String status, DynamuiListener dynamuiListener, int id, int objheight, int objwidth, DynamuiPosition posi, HashMap<String, DynamuiPreTasks> allpretasks) {
         Classname = classname;
         Properties = properties;
         Status = status;
@@ -24,6 +26,7 @@ public class DynamuiObject {
         this.objheight = objheight;
         this.objwidth = objwidth;
         this.posi = posi;
+        this.allpretasks = allpretasks;
     }
 
 
@@ -90,4 +93,13 @@ public class DynamuiObject {
     public void setPosi(DynamuiPosition posi) {
         this.posi = posi;
     }
+
+    public HashMap<String, DynamuiPreTasks> getAllpretasks() {
+        return allpretasks;
+    }
+
+    public void setAllpretasks(HashMap<String, DynamuiPreTasks> allpretasks) {
+        this.allpretasks = allpretasks;
+    }
+
 }

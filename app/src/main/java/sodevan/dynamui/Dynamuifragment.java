@@ -35,6 +35,8 @@ public class Dynamuifragment extends Fragment {
     private RelativeLayout r ;
     private String PACKAGE_NAME ;
     private int rid ;
+    private HashMap<String,Object> allObjects ;
+
 
 
 
@@ -47,6 +49,7 @@ public class Dynamuifragment extends Fragment {
         args.putString("stuff", gson);
         Dynamuifragment fragment = new Dynamuifragment();
         fragment.setArguments(args);
+
         return fragment;
 
     }
@@ -61,8 +64,10 @@ public class Dynamuifragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.dynamui_fragment , container , false) ;
 
+        allObjects = new HashMap<>() ;
         this.container = container ;
-
+        Context c = getContext() ;
+        allObjects.put("context" ,  c) ;
 
         PACKAGE_NAME = getContext().getPackageName() ;
 
@@ -78,10 +83,16 @@ public class Dynamuifragment extends Fragment {
 
         for (DynamuiObject dynamuiObject : dynamuiObjects) {
 
+
+
+
             Log.i("idhash",dynamuiObject.getId()+"");
             DynamuiListener listeners = dynamuiObject.getDynamuiListener();
 
             Log.i("dynamuiobject : ", dynamuiObject.getProperties()[0].getParameters()[0].getParamtype() + "");
+
+
+            buildpretasks(dynamuiObject.getAllpretasks()) ;
 
             View view = buildView(dynamuiObject);
 
@@ -138,7 +149,7 @@ public class Dynamuifragment extends Fragment {
 
             for (int k=0 ; k<n1 ; k++) {
                 allparams[k] =getClassfromname( params[k].getParamtype() ) ;
-                Object o12 = parsevalue(params[k].getParamvalue()  , params[k].getParserClass() , params[k].getParsermethod()) ;
+                Object o12 = parsevalue(params[k].getParamvalue()  , params[k].getParserClass() , params[k].getParsermethod() , params[k].getParamid()) ;
                 finalparams[k] = o12  ;
 
             }
@@ -188,6 +199,7 @@ public class Dynamuifragment extends Fragment {
 
         }
 
+
         return c ;
 
     }
@@ -219,49 +231,20 @@ public class Dynamuifragment extends Fragment {
     }
 
 
-    public Object parsevalue(String stringvalue , String  paramtype , String parser) {
-
-        Object parsedvalue = null ;
-
-        Log.i(TAG, "parsevalue: "+stringvalue + " " + paramtype + " " + parser);
+    public Object buildAnyObject( Class<?>  creatorclassname , Object[] creatorObjs , int creatortype  , Class<?>[]  creatorparamsclasstype  , String methodname  , Object applyobject ,  String objectid){
 
 
-        if (parser.equals("String")){
-            Log.i("parsed Object" ,  "<3") ;
-            return stringvalue ;
-        }
 
-        else if (parser.equals("android.content.Context")){
-            return getContext();
-        }
+        Object o = null ;
 
-        else if(paramtype.equals("findview")) {
-
-            if (parser.equals("stringid")){
-
-                parsedvalue  =viewfinder(intIDGenerator(stringvalue)) ;
-                Log.i("Viewparamstest" , parsedvalue+"") ;
-            }
-
-            else if (parser.equals("intid")){
-
-                parsedvalue  =viewfinder(Integer.parseInt(stringvalue)) ;
-                Log.i("Viewparamstest" , parsedvalue+"") ;
-
-
-            }
-
-            return parsedvalue ;
-
-        }
-
-        else {
-
+        if(creatortype==1){
 
             try {
-                Method method = getClassfromname(paramtype).getMethod(parser, String.class);
+                Constructor<?> constructor =  creatorclassname.getConstructor(creatorparamsclasstype) ;
                 try {
-                    parsedvalue = method.invoke(null ,stringvalue ) ;
+                    o =  constructor.newInstance(creatorObjs) ;
+                } catch (java.lang.InstantiationException e) {
+                    e.printStackTrace();
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 } catch (InvocationTargetException e) {
@@ -271,8 +254,133 @@ public class Dynamuifragment extends Fragment {
                 e.printStackTrace();
             }
 
-            Log.i("parsed Object" , parsedvalue+"") ;
-            return parsedvalue;
+
+        }
+
+
+
+        else {
+
+                if (objectid.equals("basic_bunder")){
+
+                    try {
+                        Method method = creatorclassname.getMethod( methodname , creatorparamsclasstype);
+                        try {
+                            o = method.invoke( applyobject , creatorObjs) ;
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
+                        } catch (InvocationTargetException e) {
+                            e.printStackTrace();
+                        }
+                    } catch (NoSuchMethodException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+
+
+
+                else {
+
+                    Object o1 = allObjects.get(objectid) ;
+
+
+
+                    try {
+
+                        Log.i("creatorparams" , creatorclassname+"") ;
+
+                        Method method = o1.getClass().getMethod( methodname , creatorparamsclasstype );
+                        try {
+                            o = method.invoke( o1 , creatorObjs) ;
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
+                        } catch (InvocationTargetException e) {
+                            e.printStackTrace();
+                        }
+
+                    } catch (NoSuchMethodException e) {
+                        e.printStackTrace();
+                    }
+
+
+                }
+
+
+        }
+        return o ;
+    }
+
+
+    public Object parsevalue(String stringvalue , String  paramtype , String parser  ,String paramid) {
+
+        Object parsedvalue = null ;
+
+        Log.i(TAG, "parsevalue: "+stringvalue + " " + paramtype + " " + parser);
+
+
+        if (paramid.equals("basic_bunder")) {
+
+
+            if (parser.equals("String")) {
+                Log.i("parsed Object", "<3");
+                return stringvalue;
+            } else if (parser.equals("android.content.Context")) {
+                return getContext();
+            } else if (paramtype.equals("findview")) {
+
+                if (parser.equals("stringid")) {
+
+                    parsedvalue = viewfinder(intIDGenerator(stringvalue));
+                    Log.i("Viewparamstest", parsedvalue + "");
+                } else if (parser.equals("intid")) {
+
+                    parsedvalue = viewfinder(Integer.parseInt(stringvalue));
+                    Log.i("Viewparamstest", parsedvalue + "");
+
+
+                }
+
+                return parsedvalue;
+
+            }
+
+            else if (paramtype.equals("findDrawable")){
+
+                parsedvalue = intDrawableGenerator(stringvalue) ;
+                Log.i("Viewparamstest", parsedvalue + "");
+                return parsedvalue;
+
+
+            }
+            else {
+
+
+                try {
+                    Method method = getClassfromname(paramtype).getMethod(parser, String.class);
+                    try {
+                        parsedvalue = method.invoke(null, stringvalue);
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    } catch (InvocationTargetException e) {
+                        e.printStackTrace();
+                    }
+                } catch (NoSuchMethodException e) {
+                    e.printStackTrace();
+                }
+
+                Log.i("parsed Object", parsedvalue + "");
+                return parsedvalue;
+
+            }
+        }
+
+
+
+        else {
+
+       Object  obj = allObjects.get(paramid) ;
+            return obj ;
 
         }
 
@@ -485,7 +593,7 @@ public class Dynamuifragment extends Fragment {
 
                     for (int k=0 ; k<n1 ; k++) {
                         allparams[k] =getClassfromname( params[k].getParamtype() ) ;
-                        Object o12 = parsevalue(params[k].getParamvalue()  ,  params[k].getParserClass() , params[k].getParsermethod()) ;
+                        Object o12 = parsevalue(params[k].getParamvalue()  ,  params[k].getParserClass() , params[k].getParsermethod() , params[k].getParamid()) ;
                         finalparams[k] = o12  ;
 
                     }
@@ -519,6 +627,30 @@ public class Dynamuifragment extends Fragment {
 
 
 
+
+    public void buildpretasks(HashMap<String , DynamuiPreTasks> unbuildpretasks ){
+
+        for (String key  : unbuildpretasks.keySet())  {
+
+            DynamuiPreTasks pt = unbuildpretasks.get(key) ;
+            Object o =null ;
+
+
+                DynamuiComber comber[]  = decodeDynamuiProperties(pt.getProperties()) ;
+
+                 o  = buildAnyObject(getClassfromname(pt.getCreatorName()) , comber[0].getObjects() , pt.getConstructType() , comber[0].getClasses() , pt.getProperties()[0].getMethodname() , pt.getApplyobjid()  , pt.getPretaskid()) ;
+
+
+
+
+            Log.i("Pretasks Object"  , o+"") ;
+            // Creating Object
+            allObjects.put(key , o ) ;
+        }
+    }
+
+
+
     public View viewfinder(int viewid) {
 
 
@@ -542,21 +674,57 @@ public class Dynamuifragment extends Fragment {
         return intID ;
     }
 
+    public int intDrawableGenerator(String stringid) {
 
+        int intID = getResources().getIdentifier(stringid, "drawable", PACKAGE_NAME);
+        Log.i("YouDra" , intID+"") ;
+        return intID ;
+    }
+
+
+
+
+
+    public Object getObjectfromDynamuiId(String id ) {
+       return  allObjects.get(id) ;
+
+    }
+
+
+
+    public DynamuiComber[] decodeDynamuiProperties(DynamuiObjectProperty[] prop){
+
+
+
+        int n = prop.length  ;
+        DynamuiComber[] comber =  new DynamuiComber[n] ;
+
+        for (int h=0 ; h<n ; h++) {
+
+
+
+            DynamuiObjectParams[]  params = prop[h].getParameters() ;
+            int n1 = params.length ;
+
+            Object[] finalparams = new Object[n1] ;
+            Class<?>[] allparamsclass = new  Class[n1] ;
+
+            for (int k=0 ; k<n1 ; k++) {
+                allparamsclass[k] =getClassfromname( params[k].getParamtype() ) ;
+                Object o12 = parsevalue(params[k].getParamvalue()  , params[k].getParserClass() , params[k].getParsermethod() , params[k].getParamid()) ;
+                finalparams[k] = o12    ;
+            }
+
+            comber[h] = new DynamuiComber(allparamsclass , finalparams )      ;
+
+        }
+
+        return comber ;
+
+
+    }
 
 
 }
 
 
-
-
-
-
-
-
-/*  Class[] classes = new Class[n] ;
-
-        for (int k=0 ; k<n ; k++) {
-
-            classes[k] = params[k].getParamtype() ;
-        }*/

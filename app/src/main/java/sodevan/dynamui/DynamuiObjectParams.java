@@ -10,19 +10,22 @@ public class DynamuiObjectParams {
     private String Paramvalue ;
     private String ParserClass ;
     private String Parsermethod ;
+    private String Paramid ;
 
-    public DynamuiObjectParams(String paramtype, String paramvalue, String parserClass, String parsermethod) {
+    public DynamuiObjectParams(String paramtype, String paramvalue, String parserClass, String parsermethod, String paramid) {
         Paramtype = paramtype;
         Paramvalue = paramvalue;
         ParserClass = parserClass;
         Parsermethod = parsermethod;
-
-
+        Paramid = paramid;
     }
 
 
     public String getParamtype() {
+
         return Paramtype;
+
+
     }
 
     public void setParamtype(String paramtype) {
@@ -51,5 +54,13 @@ public class DynamuiObjectParams {
 
     public void setParsermethod(String parsermethod) {
         Parsermethod = parsermethod;
+    }
+
+    public String getParamid() {
+        return Paramid;
+    }
+
+    public void setParamid(String paramid) {
+        Paramid = paramid;
     }
 }
